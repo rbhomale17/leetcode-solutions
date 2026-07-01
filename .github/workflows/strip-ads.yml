@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:  # manual trigger for bulk clean
 
+permissions:
+  contents: write
+
 jobs:
   strip:
     runs-on: ubuntu-latest
