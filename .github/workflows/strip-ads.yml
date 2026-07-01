@@ -1,0 +1,84 @@
+name: Strip LeetHub Ads
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # manual trigger for bulk clean
+
+jobs:
+  strip:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # need previous commit to get changed files
+
+      - name: Strip ads and commit with original message
+        run: |
+          # ── Ad lines to remove ─────────────────────────────────────────
+          AD1="# Synced seamlessly with LeetHub Pro"
+          AD2="# Pro features: https://bit.ly/leethubpro | Free version: https://bit.ly/leethubv4"
+          AD3="# Get it here: https://chromewebstore.google.com"
+
+          # ── Code file extensions to scan ───────────────────────────────
+          EXTENSIONS="py|js|ts|java|cpp|c|cs|go|rb|swift|kt|rs|scala|php"
+
+          # ── Decide which files to scan ─────────────────────────────────
+          # If manual trigger → scan ALL code files in repo
+          # If push trigger   → scan only files changed in this commit
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "🔍 Manual run — scanning ALL files in repo..."
+            FILES=$(find . -type f | grep -E "\.($EXTENSIONS)$" | grep -v ".github")
+          else
+            echo "🔍 Push detected — scanning only changed files..."
+            FILES=$(git diff --name-only HEAD~1 HEAD | grep -E "\.($EXTENSIONS)$" || true)
+          fi
+
+          if [ -z "$FILES" ]; then
+            echo "✅ No code files to scan."
+            exit 0
+          fi
+
+          echo "Files to scan:"
+          echo "$FILES"
+
+          # ── Strip ad lines from each file ──────────────────────────────
+          CLEANED=0
+          for FILE in $FILES; do
+            if [ ! -f "$FILE" ]; then continue; fi
+
+            # Check if file has any ad lines
+            if grep -qF "$AD1" "$FILE" || grep -qF "$AD2" "$FILE" || grep -qF "$AD3" "$FILE"; then
+              # Remove all 3 ad lines + any blank line left right after them
+              grep -vF "$AD1" "$FILE" | grep -vF "$AD2" | grep -vF "$AD3" > "$FILE.tmp"
+              mv "$FILE.tmp" "$FILE"
+              echo "  🧹 Cleaned: $FILE"
+              CLEANED=$((CLEANED + 1))
+            fi
+          done
+
+          if [ "$CLEANED" -eq 0 ]; then
+            echo "✅ No ad lines found in any file."
+            exit 0
+          fi
+
+          echo "🧹 Cleaned $CLEANED file(s)."
+
+          # ── Get original commit message to reuse ───────────────────────
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            COMMIT_MSG="chore: remove LeetHub ads from all files"
+          else
+            ORIGINAL_MSG=$(git log -1 --pretty=%B HEAD)
+            COMMIT_MSG="$ORIGINAL_MSG"
+          fi
+
+          # ── Commit cleaned files ───────────────────────────────────────
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "$COMMIT_MSG"
+          git push
+
+          echo "✅ Done! Committed with message: $COMMIT_MSG"
