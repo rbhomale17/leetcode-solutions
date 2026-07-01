@@ -98,6 +98,3 @@ Time Complexity: O(4ⁿ · n) worst case
 Space Complexity: O(n · 4ⁿ) worst case (due to storing all combinations)
 """)
 
-# Synced seamlessly with LeetHub Pro
-# Pro features: https://bit.ly/leethubpro | Free version: https://bit.ly/leethubv4
-# Get it here: https://chromewebstore.google.com/detail/bcilpkkbokcopmabingnndookdogmbna
