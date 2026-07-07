@@ -1,20 +1,19 @@
 class Solution:
-    def sumAndMultiply(self, n: int) -> int:
-        x = [int(num) for num in str(n) if int(num) > 0]
-        # print(x, type(x))
-
+    def sumAndMultiply(self, number: int) -> int:
         x_num = 0
         x_sum = 0
-        i = 0
-        while i < len(x):
-            digit = x[i]
-            x_num = (x_num * 10) + digit
-            x_sum += digit
-        
-            i += 1
+
+        for num in str(number):
+            n = int(num)
+            if n != 0:    
+                x_num = (x_num * 10) + n
+                x_sum += n        
         
         # print(x_num, x_sum)
         return x_num * x_sum
 
 
 
+# Synced seamlessly with LeetHub Pro
+# Pro features: https://bit.ly/leethubpro | Free version: https://bit.ly/leethubv4
+# Get it here: https://chromewebstore.google.com/detail/bcilpkkbokcopmabingnndookdogmbna
