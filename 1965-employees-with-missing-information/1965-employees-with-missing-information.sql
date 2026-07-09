@@ -4,7 +4,7 @@ FROM Employees e
 LEFT JOIN Salaries s ON e.employee_id = s.employee_id
 WHERE s.salary IS NULL
 
-UNION
+UNION ALL
 
 SELECT s.employee_id
 FROM Employees e
