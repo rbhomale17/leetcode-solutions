@@ -1,11 +1,7 @@
 # Write your MySQL query statement below
 SELECT
     activity_date as day,
-    COUNT(
-        DISTINCT(user_id)
-        -- CASE
-        --     WHEN activity_type IS NOT NULL
-    ) as active_users
+    COUNT(DISTINCT(user_id)) as active_users
 FROM
     Activity
 WHERE activity_date > DATE_SUB('2019-07-27', INTERVAL 30 DAY) 
