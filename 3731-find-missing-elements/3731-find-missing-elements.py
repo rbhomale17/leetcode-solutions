@@ -1,6 +1,6 @@
 class Solution:
     def findMissingElements(self, nums: List[int]) -> List[int]:
-        obj = {x: 1 for x in nums}
+        obj = set(nums)
         # print(obj)
 
         mini = min(nums)
@@ -10,11 +10,12 @@ class Solution:
 
         result = []
 
-        for num in range(mini, maxi):
-            if num == mini:
-                continue
+        for num in range(mini + 1, maxi):
             if num not in obj:
                 result.append(num)
 
         return result
 
+# Synced seamlessly with LeetHub Pro
+# Pro features: https://bit.ly/leethubpro | Free version: https://bit.ly/leethubv4
+# Get it here: https://chromewebstore.google.com/detail/bcilpkkbokcopmabingnndookdogmbna
